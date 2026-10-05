@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Si usás este software, por favor citalo como se indica a continuación."
+authors:
+  - family-names: Sánchez Leguizamón
+    given-names: Darío Nicolás
+    orcid: "https://orcid.org/0009-0002-4228-2950"
+    affiliation: "Universidad Nacional Arturo Jauretche"
+title: "Estimación del carbono aéreo en la Reserva de Biósfera Pereyra Iraola mediante integración de datos GEDI, Sentinel-2 e inteligencia artificial"
+version: 1.0.0
+date-released: 2026-10-05
+license: MIT
+repository-code: "https://github.com/sdarionicolas-boop/carbono-pereyra-gedi"
+keywords:
+  - GEDI
+  - Sentinel-2
+  - aboveground carbon
+  - Random Forest
+  - remote sensing
+  - machine learning
+  - Pereyra Iraola
+  - biosphere reserve
+  - Argentina
