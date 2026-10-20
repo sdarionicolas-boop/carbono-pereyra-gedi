@@ -201,6 +201,30 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 
 **Conclusión.** La ecuación es una **simplificación propia de Chave (2014)**, sin derivación ni calibración documentadas, con un exponente que no tiene respaldo. La §2.3 y la §4.3 del paper publicado deben corregirse para que describan lo que se hizo (Apéndice A2, ρ constante).
 
+### 3.11 Texto del paper vs. apéndice vs. archivos — *Verificado contra archivos donde se indica; el resto, extracción con NotebookLM sin verificar contra los PDF*
+El apéndice A2 de `Carbono_Pereyra_JAIIO2026_v2.pdf` describe el flujo real (altura de Meta, ecuación simplificada, Sentinel-2 de 2024, NBR). El cuerpo del texto describe otro.
+
+| Aspecto | Cuerpo del paper (v2) | Apéndice A2 y archivos |
+|---|---|---|
+| Fuente de la altura de dosel | GEDI L2A RH95 (§2.2.1, p. 3) | **Meta/WRI de 1 m** (A2, p. 8; `Pereyra.pdf` §3.1; raster `Altura_Dosel_Pereyra.tif`) |
+| Sentinel-2 | 2023; nubes < 10 % con QA60 (§2.2.2) | **2024**; nubosidad de escena < 20 %, sin máscara por píxel (notebook y archivos) |
+| Bandas | B2, B3, B4, B8, B11, **B12**, NDVI, NDWI (Tabla 2) | B2, B3, B4, B8, B11, NDVI, NDWI y **NBR**; sin B12 (stack exportado) |
+| Resolución de `Carbono_Pereyra.tif` | 10 m (§2.3) | ~5 m; la de 10 m es un remuestreo bilineal (archivos) |
+| Las 873.668 muestras | «cobertura completa de la reserva tras filtrado GEDI» (Tabla 3) | Píxeles de 10 m con carbono > 0 del raster remuestreado; **no hay filtrado GEDI** en los datos |
+| Partición 70/30 | «aleatoria por clase de altura» (Tabla 3) | Aleatoria simple, sin estratificar (código) |
+| Ecuación y ρ | Chave completa con D; ρ por hábitat (§2.3, §4.3) | Ecuación simplificada con ρ = 0,6 constante (§3.10) |
+| Fracción de carbono | 0,47 (v2) | 0,47 en el código; 50 % en `Pereyra.pdf` |
+| Fecha del proyecto MAB-UNESCO | «2008» | El formulario está fechado en **abril de 2007** (documento del Parque) |
+| Métricas (R² 0,712; RMSE 7,62; MAE 5,14; B11 59,1 %) y Tabla 6 de error por clase | Las mismas | **Coinciden** con las salidas del notebook (las etiquetas de NDVI, NDWI y NBR están desplazadas, §3.8) |
+
+**Tabla de stock por clase de altura de `Pereyra.pdf` (§4.1).** Informa superficies de 3.000 / 2.500 / 2.000 / 1.500 / 1.000 / 248 ha (suma 10.248 ha) y 15 / 125 / 460 / 900 / 1.350 / 1.750 t C (suma 4.600 t). **No coincide con las salidas del notebook** (541,43 / 89,01 / 70,01 / 42,27 / 8,11 / 2,96 ha; 4.665 t) y las superficies son números redondos que suman exactamente el área de la reserva. No se conoce cómo se obtuvieron esos valores; **no deben citarse** hasta aclararlo.
+
+**Tabla por zonas.** El apéndice A2 menciona el análisis por zonas y su exportación a `Carbono_Zonas.csv`, pero según la extracción la tabla con valores **no figura** en el texto de la v2. Verificar si se publicó en algún lado antes de pedir su retiro.
+
+**Informes de validación.** Ni el «Informe Crítico de Validación» ni «Validación GEDI» identifican autor, herramienta ni fecha; ambos dan una valoración global de «Ajustable» y recomiendan, entre otras cosas, aclarar la fuente del mapa de 1 m, detallar los filtros GEDI, cuantificar la incertidumbre y validar con parcelas de campo.
+
+**Uso de IA declarado.** El apéndice C de la v2 declara el uso de ChatGPT para la redacción y para la «revisión y documentación de los scripts de Python en Google Colab». Es una **hipótesis** (no una conclusión) que ese proceso explique por qué el notebook del repositorio anterior describía un flujo distinto del que generó los datos.
+
 ---
 
 ## 4. Qué cambiar
@@ -217,6 +241,7 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 | 7 | Corregir el hallazgo de importancia de variables según §3.8: NDVI = 4,3 % (no 3,2 %); B11 = 59,1 % se mantiene |
 | 8 | Si el trabajo se presenta junto con Iguazú, comparar **con el mismo método** (§3.9) y no los R² ni los mapas del RF |
 | 9 | Corregir la §2.3 (ecuación de Chave completa con D estimado) y la §4.3 (ρ por hábitat) según el Apéndice A2: ecuación simplificada con ρ = 0,6 constante; no presentar la pendiente log-log 1,23 ni su R² como respaldo (§3.10) |
+| 10 | Reescribir §2.2, §2.3, las Tablas 2 y 3 y la §4.3 según el apéndice A2 y los archivos (fuente de la altura, año y bandas de Sentinel-2, resolución, origen de las muestras, partición); no citar la tabla de stock por clase de `Pereyra.pdf` hasta aclarar su origen (§3.11) |
 
 ### Repositorio
 - Subir el código real que genera `Altura_Dosel_Pereyra*.tif` y `Carbono_Pereyra.tif`, con la fórmula usada.
