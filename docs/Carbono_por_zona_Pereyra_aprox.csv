@@ -1,0 +1,3 @@
+Zona,Área (ha),Huellas,Bloques 2 km,RH95 medio (m),% huellas RH95 ≥ 5 m,% Meta = 0,L4A (tC/ha),L4A IC95 inf,L4A IC95 sup,Huellas con L4A,Ecuación RH95 (tC/ha),Ecuación IC95 inf,Ecuación IC95 sup,Meta paper (tC/ha),Stock Meta paper (ktC),Stock calibrado GEDI (ktC),"Stock calibrado, 0 si Meta=0 (ktC)",Stock L4A × área (ktC),Stock ecuación RH95 × área (ktC)
+Núcleo + amortiguamiento (≈ Punta Lara),5616.72,1960,22,2.93,10.31,81.12,3.02,1.5,4.87,1832,6.76,5.36,8.5,1.65,9.24,50.2,27.48,16.97,37.99
+Transición (resto),4437.05,1320,19,11.65,68.48,27.88,25.68,18.52,31.18,1095,37.09,28.48,44.6,12.17,54.01,126.52,118.58,113.94,164.56
