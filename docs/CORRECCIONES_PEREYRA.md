@@ -12,7 +12,7 @@
 2. **El stock publicado (4,6 kt) es incorrecto.** Se calculó con área de píxel errónea (1 m² en lugar de ~20 m²) y sobre una caja que cubre solo el 59 % de la reserva. Con el mismo método bien calculado: **63 ktC**.
 3. **Las "zonas" Núcleo / Amortiguamiento / Transición no son zonas de la reserva:** son tres franjas norte–sur de la caja.
 4. **Los R² (0,71; 0,93; 1,00) no validan carbono:** miden qué tan bien se reproduce una transformación de la altura de Meta.
-5. **La altura de Meta subestima frente a GEDI** (sesgo ≈ −2,8 m dentro de la reserva, creciente con la altura). Calibrada contra GEDI, el stock sube a **~146–177 ktC** (2,3 a 2,8 veces).
+5. **La altura de Meta subestima frente a GEDI** (desfase medio ≈ −2,8 m dentro de la reserva y ≈ −3,9 m donde ambos productos detectan vegetación). Calibrada contra GEDI, el stock sube a **~146–177 ktC** (2,3 a 2,8 veces).
 6. **Pereyra e Iguazú solo son comparables con un método común** (huellas GEDI → ecuación). Así, Iguazú tiene **~3 a 4 veces más carbono por hectárea** que Pereyra (3,6 con GEDI L4A en ambos sitios); el nivel absoluto de cada sitio depende de la ecuación o producto usado (§3.9).
 
 ---
@@ -71,7 +71,7 @@ El notebook lo dice: "modelo geométrico aproximado… las zonas se generan por 
 ### 3.6 Altura de Meta vs. GEDI — *Verificado*
 Dentro de la reserva (3.280 huellas GEDI, filtros: calidad, sensibilidad ≥ 0,95, noche, pendiente ≤ 20°, 2019–2023):
 - r = 0,88; sesgo de Meta = −2,8 m; RMSE 4,4 m.
-- El sesgo crece con la altura: −1,7 m (RH95 < 5 m), −1,9 m (5–10), −4,4 m (10–15), −5,7 m (15–20), −9,2 m (≥ 20).
+- **Cómo varía con la altura:** al clasificar las huellas por la altura de GEDI, el desfase parece crecer (−1,7 m con RH95 < 5 m hasta −9,2 m con ≥ 20 m), pero eso es en buena parte un **artefacto estadístico** (regresión a la media: se clasifica por la variable más ruidosa). Al clasificar por la altura de Meta, el desfase GEDI − Meta es casi constante (+2,9; +3,3; +4,1 y +3,3 m en las clases 0,5–5; 5–10; 10–15 y ≥ 15 m). Lo defendible es un **desfase de ~3–4 m, aproximadamente constante**; la pendiente Meta ~ GEDI es 0,55 (MCO) o 0,68 (regresión de Deming, λ = 1).
 - El 60 % de las huellas tiene Meta = 0; en ese grupo GEDI marca una mediana de ~2,2 m (probable piso de ruido).
 - Carbono medio por huella: GEDI 19,0 vs. Meta 10,8 tC/ha (cociente 0,57).
 
@@ -146,7 +146,7 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 ### Texto sugerido (Métodos y Limitaciones)
 > *Métodos.* La altura del dosel se obtuvo del mapa global de altura de dosel de 1 m (Meta/WRI; Tolan et al., 2024), promediada a ~5 m. El carbono aéreo se estimó mediante la ecuación alométrica C = 0,0673·(ρh)^1,23 × 100 × 0,47 (ρ = 0,6), sin calibración local. Se entrenó un Random Forest para predecir ese carbono a partir de un mosaico anual Sentinel-2. El stock se calculó con el área real del píxel dentro del polígono de la reserva (10.053 ha).
 >
-> *Limitaciones.* El R² del modelo mide la capacidad de Sentinel-2 para reproducir un producto derivado de altura de dosel y no constituye validación frente a carbono medido en campo. La altura de Meta resultó, frente a 3.280 huellas GEDI (filtradas por calidad, noche y pendiente), en promedio 2,8 m menor (r = 0,88), con sesgo creciente en los dosel altos. Corregir ese sesgo eleva la estimación de stock en un factor de ~2,3 a 2,8. La ecuación alométrica, desarrollada para árboles individuales, no se validó contra parcelas.
+> *Limitaciones.* El R² del modelo mide la capacidad de Sentinel-2 para reproducir un producto derivado de altura de dosel y no constituye validación frente a carbono medido en campo. La altura de Meta resultó, frente a 3.280 huellas GEDI (filtradas por calidad, noche y pendiente), en promedio 2,8 m menor (r = 0,88; ≈ 3,9 m donde ambos detectan vegetación). Corregir ese sesgo eleva la estimación de stock en un factor de ~2,3 a 2,8. La ecuación alométrica, desarrollada para árboles individuales, no se validó contra parcelas.
 
 ---
 

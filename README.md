@@ -3,7 +3,7 @@
 **Autor:** Darío Nicolás Sánchez Leguizamón · Universidad Nacional Arturo Jauretche (UNAJ) · sdarionicolas@gmail.com
 **Trabajo:** *Estimación del carbono aéreo en la Reserva de Biósfera Pereyra Iraola (Buenos Aires, Argentina) mediante integración de datos GEDI, Sentinel-2 e inteligencia artificial* — CAI 2026, 55 JAIIO.
 
-> **Nota de revisión.** Este repositorio fue auditado y corregido. La versión anterior describía un flujo con GEDI RH95 y Chave (2014) que **no** es el que produjo los resultados; además, el stock informado (4,6 kt) estaba mal calculado. Ver `docs/CORRECCIONES_PEREYRA.md`.
+> **Nota de revisión.** Este repositorio fue auditado y corregido. La versión anterior describía un flujo con GEDI RH95 y Chave (2014) que **no** es el que produjo los resultados; además, el stock informado (4,6 kt) estaba mal calculado. Ver `CORRECCIONES_PEREYRA.md`.
 
 ## Qué hace el pipeline
 
@@ -33,7 +33,7 @@ python pereyra_carbono.py stock
 python pereyra_carbono.py rf
 python pereyra_carbono.py calibrar
 ```
-Los nombres por defecto de los archivos coinciden con los que genera `export` y `gedi`. `export` usa por defecto los parámetros del cálculo original de Sentinel-2 (año 2024, nubosidad de escena < 20 %, sin máscara por píxel; `--mascara-scl` la activa). `--help` muestra todas las opciones.
+Los nombres por defecto de los archivos coinciden con los que genera `export` y `gedi`. `--help` muestra todas las opciones.
 `stock`, `rf` y `calibrar` se probaron con los datos reales; `export` y `gedi` (Earth Engine) **no** se pudieron probar en esta revisión.
 
 ## Resultados corregidos (polígono OSM, 10.054 ha)
@@ -50,7 +50,7 @@ Los intervalos reflejan solo la calibración. **No** incluyen el error de la ecu
 ## Limitaciones
 - La ecuación de carbono, `C = 0,0673·(0,6·h)^1,23·100·0,47`, es por árbol y se aplica a la altura del dosel de un píxel. **No está validada con parcelas.**
 - El R² del Random Forest mide cuánto Sentinel-2 reproduce un carbono derivado de la altura de Meta. No valida carbono.
-- La altura de Meta subestima frente a GEDI: sesgo medio ≈ −2,8 m (r = 0,88; 3.280 huellas), creciente con la altura. GEDI tampoco es verdad de campo.
+- La altura de Meta subestima frente a GEDI: sesgo medio ≈ −2,8 m (r = 0,88; 3.280 huellas), aproximadamente constante (~3–4 m) donde ambos productos detectan vegetación. GEDI tampoco es verdad de campo.
 - Las zonas Núcleo / Amortiguamiento / Transición del trabajo anterior eran franjas norte–sur de una caja y **se eliminaron**.
 
 ## Datos y licencias
