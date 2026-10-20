@@ -80,6 +80,26 @@ Las tres superficies son las del documento, pero **quedaron asignadas a los nomb
 
 **Qué falta.** El Parque envió los mapas como imágenes: para calcular carbono por zona hace falta la zonificación en formato vectorial (shapefile o GeoJSON).
 
+**Aproximación con OpenStreetMap (provisoria).** Mientras no llegue la cartografía vectorial, se aproximó la zonificación así: *núcleo + amortiguamiento* ≈ Reserva Natural Punta Lara (OSM, relación 10968583; el proyecto oficial dice 4.998,05 + 791,14 = 5.789 ha) y *transición* ≈ el resto de la reserva. Las áreas resultantes son cercanas a las oficiales (5.617 ha, −3 %; 4.437 ha, −0,5 %). **No se puede separar el amortiguamiento del núcleo** con estos datos.
+
+| | Núcleo + amortiguamiento (≈ Punta Lara) | Transición (resto) |
+|---|---|---|
+| Área en este cálculo | 5.617 ha | 4.437 ha |
+| Huellas GEDI / bloques de 2 km | 1.960 / 22 | 1.320 / 19 |
+| RH95 medio · % de huellas ≥ 5 m | 2,9 m · 10 % | 11,7 m · 69 % |
+| Carbono, GEDI L4A (tC/ha) | **3,0** [1,5 – 4,9] | **25,7** [18,5 – 31,2] |
+| Carbono, ecuación sobre RH95 (tC/ha) | 6,8 [5,4 – 8,5] | 37,1 [28,5 – 44,6] |
+| Stock, método original (altura de Meta) | 9,2 ktC | 54,0 ktC |
+| Stock con la altura calibrada contra GEDI | 27,5 – 50,2 ktC | 118,6 – 126,5 ktC |
+| Stock, L4A × área | 17,0 ktC | 113,9 ktC |
+
+**Lectura.**
+- **Entre el 72 y el 87 % del carbono aéreo está en la zona de transición**, según el método (85 % con el método original, 87 % con L4A). El núcleo, que es la parte de mayor valor de conservación, tiene poco carbono aéreo por hectárea porque es sobre todo pajonal y bañado, con la selva marginal en una franja angosta junto al río (el 81 % de sus huellas tiene altura 0 según Meta).
+- Esto **no** quiere decir que el núcleo valga poco: el carbono del suelo, de los humedales y la biodiversidad no se miden aquí.
+- **Es coherente con la caja de los rasters originales:** el stock de la transición con el método original (54,0 ktC) casi coincide con los 54,3 ktC que se habían obtenido dentro de la caja (§3.3), porque esa caja cubría sobre todo esta zona.
+
+**Salvedades.** Es una aproximación con pocos bloques (22 y 19), por lo que los intervalos son anchos. En vegetación herbácea el piso de ruido de GEDI pesa mucho: la ecuación sobre RH95 asigna ~4,5 tC/ha a un RH95 de 2,2 m, y L4A (3,0 tC/ha en el núcleo) parece más razonable. Todos los valores dependen de ecuaciones o productos sin validación de campo.
+
 ### 3.5 Interpretación de los R² — *Verificado*
 - `R² = 1,000` (log–log altura–carbono): identidad, el carbono es función exacta de la altura.
 - `R² = 0,928` (RF altura → carbono): el modelo aprende esa misma función.
