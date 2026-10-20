@@ -225,6 +225,20 @@ El apéndice A2 de `Carbono_Pereyra_JAIIO2026_v2.pdf` describe el flujo real (al
 
 **Uso de IA declarado.** El apéndice C de la v2 declara el uso de ChatGPT para la redacción y para la «revisión y documentación de los scripts de Python en Google Colab». Es una **hipótesis** (no una conclusión) que ese proceso explique por qué el notebook del repositorio anterior describía un flujo distinto del que generó los datos.
 
+### 3.12 Referencias y afirmaciones sin respaldo — *extracción con NotebookLM; las cifras de los archivos están verificadas*
+**Referencias del paper v2.**
+- **UNESCO (2008)** figura como autor y año del proyecto de Reserva de Biosfera. El documento del Parque está fechado en **abril de 2007** (firmado el 25/4/2007) y es del **Ministerio de Asuntos Agrarios de la Provincia de Buenos Aires**.
+- **Tolan et al. (2024)** se cita (§3.2, p. 4) como «consistente» con que la banda SWIR1 domine sobre el NDVI. Ese trabajo estima altura de dosel **a partir de imágenes RGB** (lo dice su título) y no analiza bandas SWIR, por lo que **no respalda esa afirmación**.
+- **Li et al. (2022)** está en la bibliografía pero **no se cita en el texto**.
+- El factor de carbono **0,47** se usa sin cita en §2.3. Una fuente razonable es IPCC (2006), que citan las guías de Winrock.
+
+**Afirmaciones sin figura o tabla que las respalde.**
+1. «El sesgo medio fue +1,5 tC/ha sin agrupamientos sistemáticos» (§3.4, p. 5). No hay figura de residuos en el texto, y **no se reproduce**: el raster `Carbono_Residuos_RF.tif` (observado − predicho; 873.668 píxeles) da una media de **−0,04 tC/ha** (mediana −1,09; desvío 6,03).
+2. «El mapa predicho diferencia con nitidez los núcleos forestales de alta biomasa (> 40 tC/ha) de coberturas herbáceas y humedales (< 5 tC/ha)» (§3.4). No hay mapa en el texto. Según `Carbono_Predicho_RF.tif`, solo el **2,0 %** de los píxeles supera 40 tC/ha y el 48,8 % está por debajo de 5.
+3. «ρ asignada por tipo de hábitat» (§2.3): sin tabla de valores, y el código usa 0,6 constante (§3.10).
+
+**Zonas.** La v2 no publica cifras por zona en sus tablas (solo menciona el análisis y el archivo `Carbono_Zonas.csv`). El punto 3 del primer mail al CAI (retirar la tabla por zonas) **puede no corresponder** a la v2: verificar en el PDF antes del mail consolidado.
+
 ---
 
 ## 4. Qué cambiar
@@ -242,6 +256,7 @@ El apéndice A2 de `Carbono_Pereyra_JAIIO2026_v2.pdf` describe el flujo real (al
 | 8 | Si el trabajo se presenta junto con Iguazú, comparar **con el mismo método** (§3.9) y no los R² ni los mapas del RF |
 | 9 | Corregir la §2.3 (ecuación de Chave completa con D estimado) y la §4.3 (ρ por hábitat) según el Apéndice A2: ecuación simplificada con ρ = 0,6 constante; no presentar la pendiente log-log 1,23 ni su R² como respaldo (§3.10) |
 | 10 | Reescribir §2.2, §2.3, las Tablas 2 y 3 y la §4.3 según el apéndice A2 y los archivos (fuente de la altura, año y bandas de Sentinel-2, resolución, origen de las muestras, partición); no citar la tabla de stock por clase de `Pereyra.pdf` hasta aclarar su origen (§3.11) |
+| 11 | Revisar las citas: «UNESCO (2008)» → Ministerio de Asuntos Agrarios de la Provincia de Buenos Aires (2007); quitar o reemplazar la cita de Tolan et al. para la importancia de SWIR1; citar o eliminar Li et al. (2022); citar IPCC/Winrock para el 0,47; agregar la figura de residuos y el mapa que se mencionan, o quitar esas afirmaciones (§3.12) |
 
 ### Repositorio
 - Subir el código real que genera `Altura_Dosel_Pereyra*.tif` y `Carbono_Pereyra.tif`, con la fórmula usada.
