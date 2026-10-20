@@ -190,6 +190,17 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 
 **Qué hacer.** Si se quiere un valor central, usar la calibración de la altura contra L4A (o contra parcelas, si llegan) y no la ecuación; si se conserva la ecuación, presentarla como una hipótesis no validada.
 
+**Qué dicen los documentos del proyecto sobre la ecuación** (extracción con NotebookLM de los PDF del trabajo; las citas **no se verificaron contra los PDF**):
+
+1. **El paper se contradice a sí mismo.** La §2.3 (p. 3) de `Carbono_Pereyra_JAIIO2026_v2.pdf` describe la ecuación completa de Chave et al. (2014), `AGB = 0,0673·(ρ·D²·H)^0,976`, con el diámetro D estimado por un modelo H:D a partir de RH95. El Apéndice A2 (p. 8) da otra: `AGB = 0,0673·(ρ·H)^1,23·100; C = 0,47·AGB`, «exportado como Carbono_Pereyra.tif». **La segunda es la que generó los datos**; la primera coincide con la descripción del notebook del repositorio anterior.
+2. **El exponente 1,23 se presenta como un resultado y es circular.** Los textos informan una regresión log-log altura–carbono con pendiente 1,23 y R² = 0,98 (`Pereyra.pdf`, §3.3), R² = 0,93 «exploratoria» (apéndice) y R² = 1,000 (notebook). Esa pendiente es el exponente de la propia ecuación, así que no puede respaldarla. No hay una derivación documentada del 1,23. El «Informe Crítico de Validación» ya lo marcó («relación tautológica (circular)»).
+3. **La densidad de madera no era específica del sitio.** El texto dice que se asigna «por tipo de hábitat según el mapa UNESCO» (§2.3) y «por clase de cobertura» (§4.3); el código usa **ρ = 0,6 constante**, que coincide con el supuesto del ejemplo de las guías de Winrock («Wood Density is assumed to be 0.6 g/cm3 for all trees»).
+4. **La fracción de carbono cambia entre versiones:** 0,47 en la v2 (Winrock, que cita IPCC 2006, Tabla 4.3) y 50 % en `Pereyra.pdf`.
+5. **Ni Chave (2014) ni Winrock proponen estimar la biomasa de árboles vivos solo con la altura del dosel.** La Ec. (4) de Chave usa D, H y ρ por árbol (en kg); su Ec. (7) prescinde de la altura. Las guías de Winrock usan el diámetro.
+6. **Los informes de validación** recomiendan incorporar la densidad de la madera por tipo funcional de vegetación y señalan la simplificación; evaluaron un texto que describía GEDI como fuente de la altura.
+
+**Conclusión.** La ecuación es una **simplificación propia de Chave (2014)**, sin derivación ni calibración documentadas, con un exponente que no tiene respaldo. La §2.3 y la §4.3 del paper publicado deben corregirse para que describan lo que se hizo (Apéndice A2, ρ constante).
+
 ---
 
 ## 4. Qué cambiar
@@ -205,6 +216,7 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 | 6 | Agregar el chequeo Meta vs. GEDI y el sesgo de altura a Limitaciones |
 | 7 | Corregir el hallazgo de importancia de variables según §3.8: NDVI = 4,3 % (no 3,2 %); B11 = 59,1 % se mantiene |
 | 8 | Si el trabajo se presenta junto con Iguazú, comparar **con el mismo método** (§3.9) y no los R² ni los mapas del RF |
+| 9 | Corregir la §2.3 (ecuación de Chave completa con D estimado) y la §4.3 (ρ por hábitat) según el Apéndice A2: ecuación simplificada con ρ = 0,6 constante; no presentar la pendiente log-log 1,23 ni su R² como respaldo (§3.10) |
 
 ### Repositorio
 - Subir el código real que genera `Altura_Dosel_Pereyra*.tif` y `Carbono_Pereyra.tif`, con la fórmula usada.
