@@ -1,0 +1,159 @@
+# Correcciones propuestas — Estimación de carbono aéreo, Reserva de Biosfera Pereyra Iraola
+
+**Para:** Darío N. Sánchez Leguizamón · **Alcance:** paper (CAI 2026 — 55 JAIIO) y repositorio `carbono-pereyra-gedi`
+**Origen:** auditoría de los archivos de `PEREYRA/`, del notebook original (`Altura+COIraola (1).ipynb`) y del repo publicado.
+**Cómo leerlo:** cada hallazgo indica su **estado** — *Verificado* (reproducido con tus archivos), *Inferido* (deducción razonable, falta confirmar) o *Condicional* (depende de un dato que no pude comprobar).
+
+---
+
+## 1. Resumen ejecutivo
+
+1. **La cadena de cálculo real no coincide con la descrita.** Los resultados salen de la altura de dosel de **Meta/WRI** (1 m), convertida a carbono con una ecuación propia, y de un Random Forest con Sentinel-2. **GEDI no interviene** en ninguna celda que genere los resultados, y la fórmula del repo no es la usada.
+2. **El stock publicado (4,6 kt) es incorrecto.** Se calculó con área de píxel errónea (1 m² en lugar de ~20 m²) y sobre una caja que cubre solo el 59 % de la reserva. Con el mismo método bien calculado: **63 ktC**.
+3. **Las "zonas" Núcleo / Amortiguamiento / Transición no son zonas de la reserva:** son tres franjas norte–sur de la caja.
+4. **Los R² (0,71; 0,93; 1,00) no validan carbono:** miden qué tan bien se reproduce una transformación de la altura de Meta.
+5. **La altura de Meta subestima frente a GEDI** (sesgo ≈ −2,8 m dentro de la reserva, creciente con la altura). Calibrada contra GEDI, el stock sube a **~146–177 ktC** (2,3 a 2,8 veces).
+6. **Pereyra e Iguazú solo son comparables con un método común** (huellas GEDI → ecuación). Así, Iguazú tiene **~3 a 4 veces más carbono por hectárea** que Pereyra (3,6 con GEDI L4A en ambos sitios); el nivel absoluto de cada sitio depende de la ecuación o producto usado (§3.9).
+
+---
+
+## 2. Cifras: publicado vs. corregido
+
+| Concepto | Publicado | Corregido | Estado |
+|---|---|---|---|
+| Stock total | 4,6 ktC (README) / 4.665 t (notebook) | **63,3 ktC** (método del paper, reserva completa) | Verificado |
+| Stock de la caja de los rasters (≈15.300 ha) | — | 77,2 ktC (idéntico en dos rasters) | Verificado |
+| Área analizada | "~10.248 ha" | Caja ≈ 15.300 ha, de las cuales **5.943 ha (59 %)** son reserva | Verificado (polígono OSM) |
+| Stock con altura calibrada contra GEDI | — | **146–177 ktC** | Verificado (ver límites, §3.7) |
+| Zonas (3,79 kt en total) | `Carbono_Zonas.csv` | No utilizable (§3.4) | Verificado |
+
+Los escenarios completos (`Stock_Pereyra_reserva.csv`, polígono OSM, 10.054 ha):
+
+| Escenario | ktC | tC/ha | vs. paper |
+|---|---|---|---|
+| 1. Paper: altura media a 5 m | 63,3 | 6,3 | 1,00 |
+| 2. Meta p95 a 25 m, sin calibrar | 95,6 | 9,5 | 1,51 |
+| 3. Calibrado contra GEDI | 176,7 [161,7 – 187,4] | 17,6 | 2,79 |
+| 4. Calibrado, 0 donde Meta = 0 | 146,1 [131,8 – 156,1] | 14,5 | 2,31 |
+
+Los intervalos reflejan solo la calibración (bootstrap por bloques de 2 km). **No** incluyen el error de la ecuación de carbono ni el de la altura de Meta.
+
+---
+
+## 3. Hallazgos, con evidencia
+
+### 3.1 La cadena real no incluye GEDI — *Verificado*
+- El notebook original genera `Altura_Dosel_Pereyra.tif` desde el asset de Meta (`projects/meta-forest-monitoring-okw37/assets/CanopyHeight`, banda `cover_code`), lo promedia a ~5 m (`Resampling.average`, salida `uint8`), aplica la fórmula y obtiene `Carbono_Pereyra.tif`.
+- Reproducción: aplicar la fórmula a esa altura reproduce `Carbono_Pereyra.tif` con diferencia máxima de 7,5 × 10⁻⁶ tC/ha.
+- El notebook del repo (`Carbono_Pereyra_GEDI_Sentinel2_RF.ipynb`) exporta RH95 de GEDI a 25 m, pero ese raster (`GEDI_RH95_Pereyra.tif`) no existe entre tus archivos ni se usa en los resultados. Tampoco el repo contiene el código que genera `Altura_Dosel_Pereyra*.tif`.
+
+### 3.2 La fórmula del repo no es la utilizada — *Verificado*
+- **Usada:** `C = 0,0673 · (0,6·h)^1,23 · 100 · 0,47` (tC/ha, *h* en m).
+- **En el repo:** Chave (2014) con diámetro estimado `D = 2,5·h^0,63`.
+- Ambas son ecuaciones pensadas **por árbol** y aplicadas a la altura del dosel de un píxel; ninguna se validó contra carbono medido.
+
+### 3.3 Error de área y de dominio en el stock — *Verificado*
+- `Resumen_Altura_Pereyra.csv` y `Carbono_Zonas.csv` cuentan cada píxel como 1 m² (753,8 ha en total). Los píxeles son de ~20,4 m² (5 m) y ~81,5 m² (10 m).
+- Por eso la tabla por clases suma 4.665 t (origen del 4,6 kt del README), y las zonas suman 3,79 kt.
+- Con el área real, `Carbono_Pereyra.tif` (5 m) y `Carbono_Pereyra_10m.tif` dan el mismo stock: 77,2 ktC en la caja.
+- La caja (lon −58,233 a −58,043; lat −34,89 a −34,81) cubre solo el 59 % del polígono de la reserva (OSM, 10.053 ha). Faltan ~4.100 ha al norte y al este, con mucho menos carbono (GEDI: 7,5 vs 27,8 tC/ha). Además, ~9.500 ha de la caja no pertenecen a la reserva.
+- Polígono: OpenStreetMap, relación 10968584 (ODbL). Coincide con el de WDPA (92 % de solapamiento, contorno a ≤ 825 m) y con el área oficial (10.248 ha) dentro de ~2 %. No sé si ambos derivan de la misma fuente.
+
+### 3.4 Las zonas UNESCO son franjas de la caja — *Verificado en el código*
+El notebook lo dice: "modelo geométrico aproximado… las zonas se generan por subconjuntos dentro del mismo polígono (en el eje Norte-Sur)", con cortes en 7,7 % y 51,2 % del alto, proporciones tomadas de un "documento UNESCO" (791, 4.459 y 4.998 ha; **no verifiqué ese documento**). Recomendación: **eliminar la tabla** o rehacerla con la zonificación oficial (hay que pedirla al ente gestor).
+
+### 3.5 Interpretación de los R² — *Verificado*
+- `R² = 1,000` (log–log altura–carbono): identidad, el carbono es función exacta de la altura.
+- `R² = 0,928` (RF altura → carbono): el modelo aprende esa misma función.
+- `R² = 0,71` (RF Sentinel-2 → carbono): mide qué tanto Sentinel-2 reproduce un producto derivado de Meta. En una réplica con submuestra de 200.000 píxeles y 100 árboles obtuve 0,67 con división aleatoria y 0,63 / 0,58 con bloques espaciales de 2 y 5 km. **No hay inflado por autocorrelación**, pero tampoco es validación de carbono. No reproduje exactamente el 0,71.
+- El carbono de Iguazú muestra qué pasa cuando el objetivo es una medición independiente (GEDI L4A): el R² espacial cae a ~0,08.
+
+### 3.6 Altura de Meta vs. GEDI — *Verificado*
+Dentro de la reserva (3.280 huellas GEDI, filtros: calidad, sensibilidad ≥ 0,95, noche, pendiente ≤ 20°, 2019–2023):
+- r = 0,88; sesgo de Meta = −2,8 m; RMSE 4,4 m.
+- El sesgo crece con la altura: −1,7 m (RH95 < 5 m), −1,9 m (5–10), −4,4 m (10–15), −5,7 m (15–20), −9,2 m (≥ 20).
+- El 60 % de las huellas tiene Meta = 0; en ese grupo GEDI marca una mediana de ~2,2 m (probable piso de ruido).
+- Carbono medio por huella: GEDI 19,0 vs. Meta 10,8 tC/ha (cociente 0,57).
+
+### 3.7 Calibración contra GEDI: límites — *Verificado, con reservas*
+- Se ajusta una regresión isotónica del carbono-GEDI sobre la altura de Meta; con validación cruzada espacial el R² por huella sube de 0,62 a 0,73.
+- GEDI también tiene error (geolocalización ~10 m, piso de ruido en vegetación baja); **no es una verdad de campo**. Por eso se dan dos variantes (3 y 4) y no un único valor.
+- La estimación directa por huellas (sin Meta) da 159–191 ktC (IC95 91–264), coherente pero no independiente.
+
+### 3.8 Etiquetas de variables en la importancia del RF — *Verificado*
+En la celda del Random Forest del notebook original, `feature_names` tiene **9** nombres (`B2, B3, B4, B8, B11, B12, NDVI, NDWI, NBR`) pero el stack exportado tiene **8** bandas (`B2, B3, B4, B8, B11, NDVI, NDWI, NBR`; no se exportó B12). La función `zip(feature_names, importances)` corta en 8, de modo que las últimas tres etiquetas quedaron corridas:
+
+| Etiqueta impresa | Banda real | Importancia |
+|---|---|---|
+| B12 | **NDVI** | 0,043 |
+| NDVI | **NDWI** | 0,032 |
+| NDWI | **NBR** | 0,062 |
+
+- **B11 = 0,591 (59,1 %) no cambia**: ocupa la misma posición en ambas listas. Las bandas B2, B3, B4 y B8 tampoco cambian.
+- Hay que corregir el texto que dice «NDVI aporta 3,2 %»: **el NDVI aporta 4,3 %** (3,2 % es el NDWI). La conclusión cualitativa (el NDVI aporta poco frente a B11) se mantiene.
+- **B12 no forma parte del modelo.** Aparece en la figura `Importancia_Variables_RF_Mejorada.png`, que además se generó con valores escritos a mano (`importance = [0.049, 0.132, ...]`) y con la misma lista de 8 etiquetas errónea.
+- El mismo notebook confirma las métricas del README: R² 0,712 · RMSE 7,62 · MAE 5,14 tC/ha · 873.668 muestras (división aleatoria 70/30).
+- **El stack de Sentinel-2 se generó con** mediana anual de **2024**, `CLOUDY_PIXEL_PERCENTAGE < 20`, sin máscara de nubes por píxel (el notebook del repo decía 2023 y < 10 %).
+
+### 3.9 Comparación Pereyra–Iguazú con el mismo método — *Verificado, con reservas*
+Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en Pereyra el objetivo es un carbono derivado de la altura de Meta (R² ≈ 0,6) y en Iguazú es la biomasa de GEDI L4A (R² espacial ≈ 0,08). Esos R² no dicen cuál sitio se predice mejor. Para comparar sí hay un método común: **huellas GEDI L2A RH95** (mismos filtros: calidad, sensibilidad ≥ 0,95, noche, pendiente ≤ 20°, 2019–2023) → ecuación → media por hectárea con IC95 por bootstrap de bloques de 2 km.
+
+| | Pereyra (polígono OSM) | Iguazú (polígono WDPA) |
+|---|---|---|
+| Huellas | 3.280 | 20.283 |
+| RH95 media / mediana | 6,4 / 2,2 m | 18,0 / 18,3 m |
+| Huellas con RH95 ≥ 5 m / ≥ 20 m | 34 % / 6 % | 99 % / 34 % |
+
+| Ecuación y variante | Pereyra (tC/ha) | Iguazú (tC/ha) | Iguazú ÷ Pereyra |
+|---|---|---|---|
+| Del trabajo (exp. 1,23), todas las huellas | 19,0 [12,7 ; 26,2] | 59,7 [58,6 ; 60,8] | 3,2 |
+| Del trabajo, 0 si RH95 < 3 m | 16,5 [9,6 ; 24,3] | 59,7 [58,5 ; 60,8] | 3,6 |
+| Del trabajo, 0 si RH95 < 5 m | 15,8 [9,0 ; 23,6] | 59,6 [58,5 ; 60,7] | 3,8 |
+| Chave 2014 con D estimado, todas | 19,0 [10,1 ; 29,5] | 73,5 [71,3 ; 75,8] | 3,9 |
+| **GEDI L4A (AGBD × 0,47), mismo producto** | **11,5 [6,6 ; 17,3]** (N = 2.927) | **41,5 [40,2 ; 42,7]** (N = 24.603) | **3,6** |
+
+**Lectura:**
+- **Iguazú tiene ~3 a 4 veces más carbono por hectárea que Pereyra.** Es robusto a la ecuación (dos probadas) y al tratamiento del piso de ruido de GEDI.
+- **El valor absoluto depende del método**: la misma selva de Iguazú da 41,5 (L4A), 59,7 (ecuación del trabajo) o 73,5 tC/ha (Chave), un factor de 1,4 a 1,8. Sin parcelas no se puede decir cuál es mejor. Que 59,7 coincida con la media regional del INBN2 (59,7) es una **coincidencia numérica**, no una validación.
+- **Los IC no son comparables en ancho**: Pereyra tiene 37 bloques de 2 km (IC amplio); Iguazú tiene muchos más y un bosque homogéneo. El IC de Iguazú tampoco incluye que su polígono WDPA es ~14 % menor que el área oficial.
+- **Los stocks totales** (≈ 190 ktC Pereyra; ≈ 3.500 ktC Iguazú, con la ecuación del trabajo) son solo orden de magnitud: dependen del área y del polígono.
+- **L4A confirma el cociente:** con el mismo producto en los dos sitios, Iguazú ÷ Pereyra = 3,6, dentro del rango obtenido con RH95 (3,2 a 3,9). Para Pereyra, L4A da 11,5 tC/ha, menos que la ecuación sobre RH95 (19,0 o 15,8 con piso). Una razón probable: L4A asigna ~1 a 1,5 Mg/ha en campo abierto (62 % de las huellas con AGBD < 5 Mg/ha), mientras que la ecuación del trabajo asigna ~4,5 tC/ha a un RH95 de 2,2 m; eso apunta a que las variantes con piso (0 si RH95 < 3 o 5 m) son más sensatas que "todas las huellas". Es una interpretación, no una prueba.
+- **Stock de Pereyra por distintos caminos** (10.053 ha; solo orden de magnitud y todos con ecuaciones no validadas): método original bien calculado 63 ktC; L4A × área ≈ 116 ktC [IC95 ≈ 66–174]; ecuación del trabajo sobre RH95 ≈ 159–191 ktC; Meta calibrado contra GEDI ≈ 146–177 ktC.
+- **Salvedades de L4A en Pereyra:** 353 de las 3.280 huellas (11 %) no tienen dato L4A y quedan fuera; no verifiqué si eso sesga la media. Además, r(RH95, AGBD) = 0,87 en Pereyra pero 0,61 en Iguazú: en selva densa L4A depende de más que la altura.
+
+---
+
+## 4. Qué cambiar
+
+### Paper
+| # | Cambio |
+|---|---|
+| 1 | Describir el método real: *altura de dosel Meta/WRI (1 m) → ecuación alométrica → RF con Sentinel-2*. GEDI, si se mantiene, como **chequeo independiente** de la altura |
+| 2 | Reemplazar 4,6 kt por el stock recalculado y presentarlo **como rango** (§2), con la advertencia de que la ecuación no está validada |
+| 3 | Aclarar el dominio: área real analizada y qué parte de la reserva cubre |
+| 4 | Quitar o rehacer la tabla por zonas |
+| 5 | Presentar R² como consistencia del modelo con la altura de Meta, no como validación de carbono |
+| 6 | Agregar el chequeo Meta vs. GEDI y el sesgo de altura a Limitaciones |
+| 7 | Corregir el hallazgo de importancia de variables según §3.8: NDVI = 4,3 % (no 3,2 %); B11 = 59,1 % se mantiene |
+| 8 | Si el trabajo se presenta junto con Iguazú, comparar **con el mismo método** (§3.9) y no los R² ni los mapas del RF |
+
+### Repositorio
+- Subir el código real que genera `Altura_Dosel_Pereyra*.tif` y `Carbono_Pereyra.tif`, con la fórmula usada.
+- Corregir README: stock, área, descripción del pipeline (hoy dice GEDI RH95), lista de archivos.
+- Quitar o corregir `Carbono_Zonas.csv` y `Resumen_Altura_Pereyra.csv`, o regenerarlos con área real.
+- Verificar que las bandas del stack coincidan con las etiquetas del notebook.
+
+### Texto sugerido (Métodos y Limitaciones)
+> *Métodos.* La altura del dosel se obtuvo del mapa global de altura de dosel de 1 m (Meta/WRI; Tolan et al., 2024), promediada a ~5 m. El carbono aéreo se estimó mediante la ecuación alométrica C = 0,0673·(ρh)^1,23 × 100 × 0,47 (ρ = 0,6), sin calibración local. Se entrenó un Random Forest para predecir ese carbono a partir de un mosaico anual Sentinel-2. El stock se calculó con el área real del píxel dentro del polígono de la reserva (10.053 ha).
+>
+> *Limitaciones.* El R² del modelo mide la capacidad de Sentinel-2 para reproducir un producto derivado de altura de dosel y no constituye validación frente a carbono medido en campo. La altura de Meta resultó, frente a 3.280 huellas GEDI (filtradas por calidad, noche y pendiente), en promedio 2,8 m menor (r = 0,88), con sesgo creciente en los dosel altos. Corregir ese sesgo eleva la estimación de stock en un factor de ~2,3 a 2,8. La ecuación alométrica, desarrollada para árboles individuales, no se validó contra parcelas.
+
+---
+
+## 5. Pendiente / sin verificar
+- Pedir la zonificación oficial de la reserva (ente gestor) para rehacer las zonas.
+- Si hay parcelas de campo en Pereyra, validar la ecuación de carbono: es el factor que más pesa y el menos conocido.
+- Validar con parcelas de campo en Iguazú (los pedidos están redactados en `PEDIDOS_DATOS.md`): es lo único que permite decidir entre 41,5, 59,7 y 73,5 tC/ha.
+
+## 6. Archivos de soporte (carpeta `carbono-iguazu-gedi/`)
+`pereyra_osm.geojson` · `pares_meta_gedi_reserva.csv` · `Meta_H5m_mean.tif` · `Meta_H25m.tif` · `Stock_Pereyra_reserva.csv` · `stock_pereyra_reserva_completa.py` · `calibracion_meta_gedi_pereyra.py` · `comparacion_pereyra_iguazu.py` · `Comparacion_Pereyra_Iguazu.csv` · `Comparacion_estructura_Pereyra_Iguazu.csv` · `repo_pereyra_actualizado/` (script único `pereyra_carbono.py` y README para el repo) · `PEREYRA_poligono_vs_caja.png` (esta imagen se hizo antes de contrastar con OSM; su lectura de "desalineación" quedó descartada)
