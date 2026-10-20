@@ -12,7 +12,7 @@
 2. **El stock publicado (4,6 kt) es incorrecto.** Se calculó con área de píxel errónea (1 m² en lugar de ~20 m²) y sobre una caja que cubre solo el 59 % de la reserva. Con el mismo método bien calculado: **63 ktC**.
 3. **Las "zonas" Núcleo / Amortiguamiento / Transición no son zonas de la reserva:** son tres franjas norte–sur de la caja, y las superficies oficiales (4.998 / 791 / 4.459 ha) quedaron asignadas a los nombres equivocados (§3.4).
 4. **Los R² (0,71; 0,93; 1,00) no validan carbono:** miden qué tan bien se reproduce una transformación de la altura de Meta.
-5. **La altura de Meta subestima frente a GEDI** (desfase medio ≈ −2,8 m dentro de la reserva y ≈ −3,9 m donde ambos productos detectan vegetación). Calibrada contra GEDI, el stock sube a **~146–177 ktC** (2,3 a 2,8 veces).
+5. **La altura de Meta subestima frente a GEDI** (desfase medio ≈ −2,8 m dentro de la reserva y ≈ −3,9 m donde ambos productos detectan vegetación). Calibrada contra GEDI con la ecuación del trabajo, el stock sube a **~146–177 ktC**; pero esa ecuación sobreestima 2 a 3 veces la biomasa de GEDI L4A en alturas bajas, y con L4A como referencia el valor es **≈ 95–130 ktC** (§3.10).
 6. **Pereyra e Iguazú solo son comparables con un método común** (huellas GEDI → ecuación). Así, Iguazú tiene **~3 a 4 veces más carbono por hectárea** que Pereyra (3,6 con GEDI L4A en ambos sitios); el nivel absoluto de cada sitio depende de la ecuación o producto usado (§3.9).
 
 ---
@@ -24,7 +24,8 @@
 | Stock total | 4,6 ktC (README) / 4.665 t (notebook) | **63,3 ktC** (método del paper, reserva completa) | Verificado |
 | Stock de la caja de los rasters (≈15.300 ha) | — | 77,2 ktC (idéntico en dos rasters) | Verificado |
 | Área analizada | "~10.248 ha" | Caja ≈ 15.300 ha, de las cuales **5.943 ha (59 %)** son reserva | Verificado (polígono OSM) |
-| Stock con altura calibrada contra GEDI | — | **146–177 ktC** | Verificado (ver límites, §3.7) |
+| Stock con altura calibrada contra GEDI (ecuación del trabajo) | — | 146–177 ktC | Verificado (ver límites, §3.7 y §3.10) |
+| Stock con altura calibrada contra GEDI L4A | — | **≈ 95 ktC** [84–102] (L4A directo: 116–131) | Verificado, con reservas (§3.10) |
 | Zonas (3,79 kt en total) | `Carbono_Zonas.csv` | No utilizable (§3.4) | Verificado |
 
 Los escenarios completos (`Stock_Pereyra_reserva.csv`, polígono OSM, 10.054 ha):
@@ -50,7 +51,7 @@ Los intervalos reflejan solo la calibración (bootstrap por bloques de 2 km). **
 ### 3.2 La fórmula del repo no es la utilizada — *Verificado*
 - **Usada:** `C = 0,0673 · (0,6·h)^1,23 · 100 · 0,47` (tC/ha, *h* en m).
 - **En el repo:** Chave (2014) con diámetro estimado `D = 2,5·h^0,63`.
-- Ambas son ecuaciones pensadas **por árbol** y aplicadas a la altura del dosel de un píxel; ninguna se validó contra carbono medido.
+- La del repo (Chave 2014) es una ecuación **por árbol**; el origen de la usada en los datos no está documentado (§3.10). Ninguna se validó contra carbono medido.
 
 ### 3.3 Error de área y de dominio en el stock — *Verificado*
 - `Resumen_Altura_Pereyra.csv` y `Carbono_Zonas.csv` cuentan cada píxel como 1 m² (753,8 ha en total). Los píxeles son de ~20,4 m² (5 m) y ~81,5 m² (10 m).
@@ -160,6 +161,34 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 - **L4A confirma el cociente:** con el mismo producto en los dos sitios, Iguazú ÷ Pereyra = 3,6, dentro del rango obtenido con RH95 (3,2 a 3,9). Para Pereyra, L4A da 11,5 tC/ha, menos que la ecuación sobre RH95 (19,0 o 15,8 con piso). Una razón probable: L4A asigna ~1 a 1,5 Mg/ha en campo abierto (62 % de las huellas con AGBD < 5 Mg/ha), mientras que la ecuación del trabajo asigna ~4,5 tC/ha a un RH95 de 2,2 m; eso apunta a que las variantes con piso (0 si RH95 < 3 o 5 m) son más sensatas que "todas las huellas". Es una interpretación, no una prueba.
 - **Stock de Pereyra por distintos caminos** (10.053 ha; solo orden de magnitud y todos con ecuaciones no validadas): método original bien calculado 63 ktC; L4A × área ≈ 116 ktC [IC95 ≈ 66–174]; ecuación del trabajo sobre RH95 ≈ 159–191 ktC; Meta calibrado contra GEDI ≈ 146–177 ktC.
 - **Salvedades de L4A en Pereyra:** 353 de las 3.280 huellas (11 %) no tienen dato L4A y quedan fuera. Verificado: son huellas de vegetación baja (RH95 medio 2,3 m, 87 % con Meta = 0, 1 % con RH95 ≥ 5 m), así que la media L4A de 11,5 tC/ha está algo sobreestimada: si esas huellas valieran 0, o lo que predice su RH95, la media sería ≈ 10,3–10,4 tC/ha (−10 %, dentro del IC95 [6,6 ; 17,3]) y el cociente Iguazú ÷ Pereyra subiría de 3,6 a ≈ 4,0. Además, r(RH95, AGBD) = 0,87 en Pereyra pero 0,61 en Iguazú: en selva densa L4A depende de más que la altura.
+
+### 3.10 La ecuación de carbono frente a GEDI L4A — *Verificado, con reservas*
+**Origen.** El notebook original la rotula «t/ha aproximado» y no cita fuente. Comparte el coeficiente 0,0673 con la ecuación pantropical de Chave et al. (2014), pero tiene otra forma (exponente 1,23, sin diámetro, factor ×100). **Su origen y su validez no están documentados.**
+
+**Comparación en las mismas huellas.** Cociente entre la biomasa que da la ecuación sobre RH95 y la biomasa de GEDI L4A (modelo calibrado a escala global con parcelas de campo), por clase de altura:
+
+| RH95 de GEDI | < 3 m | 3–6 | 6–10 | 10–15 | 15–20 | 20–25 | 25–30 | ≥ 30 m |
+|---|---|---|---|---|---|---|---|---|
+| Pereyra (2.927 huellas) | 6,3 | 2,9 | 2,6 | 2,3 | 1,6 | 1,4 | 1,3 | 1,1 |
+| Iguazú (20.000 huellas) | — | 2,5 | 2,5 | 2,0 | 1,6 | 1,3 | 1,1 | 1,0 |
+
+- **La ecuación sobreestima 2 a 3 veces frente a L4A en alturas menores de 15 m** (la mayor parte de Pereyra) y converge con L4A en dosel alto. El patrón es el mismo en los dos sitios.
+- Ajustando una potencia a L4A, el exponente implícito es de ≈ 2,4 (Pereyra) a 2,8 (Iguazú), contra 1,23 de la ecuación del trabajo.
+- Las medias sobre todas las huellas: Pereyra, ecuación 44,0 vs. L4A 24,5 Mg/ha; Iguazú, 128,0 vs. 87,7 Mg/ha.
+
+**Consecuencia: dos errores que se compensan en parte.** La altura de Meta es ~4 m menor que la de GEDI (§3.6, resta carbono) y la ecuación sobreestima a alturas bajas (suma carbono). Por eso el stock del método original (63 ktC) cae en medio de los demás. Stock de la reserva completa según el camino:
+
+| Camino | Stock (ktC) |
+|---|---|
+| Método original, bien calculado (altura de Meta + ecuación) | 63,3 |
+| Altura de Meta calibrada **directamente contra L4A** (regresión isotónica) | **94,8** [84,2 – 102,1] (núcleo + amortiguamiento 18,2; transición 76,5) |
+| Media L4A × área (ponderada por zona: 131) | 116 |
+| Altura de Meta con la ecuación, sin calibrar (p95 a 25 m) | 95,6 |
+| Ecuación calibrada contra RH95 de GEDI | 146 – 177 |
+
+**Lectura.** Ningún valor está validado en campo. Dado que la ecuación infla las alturas bajas respecto de L4A, **los 146–177 ktC (que usan la ecuación) probablemente sobreestiman**, y el rango más consistente con un producto calibrado con parcelas es **≈ 95–130 ktC**. L4A es a su vez un modelo global con error propio, sobre todo en vegetación baja y herbácea; no es verdad de campo.
+
+**Qué hacer.** Si se quiere un valor central, usar la calibración de la altura contra L4A (o contra parcelas, si llegan) y no la ecuación; si se conserva la ecuación, presentarla como una hipótesis no validada.
 
 ---
 
