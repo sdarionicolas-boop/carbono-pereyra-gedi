@@ -5,6 +5,8 @@
 
 > **Nota de revisión.** Este repositorio fue auditado y corregido. La versión anterior describía un flujo con GEDI RH95 y Chave (2014) que **no** es el que produjo los resultados; además, el stock informado (4,6 kt) estaba mal calculado. Ver `CORRECCIONES_PEREYRA.md`.
 
+> **Versión Iguazú.** La carpeta [`iguazu/`](iguazu/) aplica el mismo enfoque al Parque Nacional Iguazú (Misiones), con las correcciones de esta auditoría: notebook, tabla de huellas GEDI y script que reproduce las cifras sin Earth Engine.
+
 ## Qué hace el pipeline
 
 ```
