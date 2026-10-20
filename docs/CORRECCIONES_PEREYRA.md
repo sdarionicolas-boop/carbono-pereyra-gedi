@@ -12,7 +12,7 @@
 2. **El stock publicado (4,6 kt) es incorrecto.** Se calculó con área de píxel errónea (1 m² en lugar de ~20 m²) y sobre una caja que cubre solo el 59 % de la reserva. Con el mismo método bien calculado: **63 ktC**.
 3. **Las "zonas" Núcleo / Amortiguamiento / Transición no son zonas de la reserva:** son tres franjas norte–sur de la caja, y las superficies oficiales (4.998 / 791 / 4.459 ha) quedaron asignadas a los nombres equivocados (§3.4).
 4. **Los R² (0,71; 0,93; 1,00) no validan carbono:** miden qué tan bien se reproduce una transformación de la altura de Meta.
-5. **La altura de Meta subestima frente a GEDI** (desfase medio ≈ −2,8 m dentro de la reserva y ≈ −3,9 m donde ambos productos detectan vegetación). Calibrada contra GEDI, el stock sube a **~146–177 ktC** (2,3 a 2,8 veces).
+5. **La altura de Meta subestima frente a GEDI** (desfase medio ≈ −2,8 m dentro de la reserva y ≈ −3,9 m donde ambos productos detectan vegetación). Calibrada contra GEDI con la ecuación del trabajo, el stock sube a **~146–177 ktC**; pero esa ecuación sobreestima 2 a 3 veces la biomasa de GEDI L4A en alturas bajas, y con L4A como referencia el valor es **≈ 95–130 ktC** (§3.10).
 6. **Pereyra e Iguazú solo son comparables con un método común** (huellas GEDI → ecuación). Así, Iguazú tiene **~3 a 4 veces más carbono por hectárea** que Pereyra (3,6 con GEDI L4A en ambos sitios); el nivel absoluto de cada sitio depende de la ecuación o producto usado (§3.9).
 
 ---
@@ -24,7 +24,8 @@
 | Stock total | 4,6 ktC (README) / 4.665 t (notebook) | **63,3 ktC** (método del paper, reserva completa) | Verificado |
 | Stock de la caja de los rasters (≈15.300 ha) | — | 77,2 ktC (idéntico en dos rasters) | Verificado |
 | Área analizada | "~10.248 ha" | Caja ≈ 15.300 ha, de las cuales **5.943 ha (59 %)** son reserva | Verificado (polígono OSM) |
-| Stock con altura calibrada contra GEDI | — | **146–177 ktC** | Verificado (ver límites, §3.7) |
+| Stock con altura calibrada contra GEDI (ecuación del trabajo) | — | 146–177 ktC | Verificado (ver límites, §3.7 y §3.10) |
+| Stock con altura calibrada contra GEDI L4A | — | **≈ 95 ktC** [84–102] (L4A directo: 116–131) | Verificado, con reservas (§3.10) |
 | Zonas (3,79 kt en total) | `Carbono_Zonas.csv` | No utilizable (§3.4) | Verificado |
 
 Los escenarios completos (`Stock_Pereyra_reserva.csv`, polígono OSM, 10.054 ha):
@@ -50,7 +51,7 @@ Los intervalos reflejan solo la calibración (bootstrap por bloques de 2 km). **
 ### 3.2 La fórmula del repo no es la utilizada — *Verificado*
 - **Usada:** `C = 0,0673 · (0,6·h)^1,23 · 100 · 0,47` (tC/ha, *h* en m).
 - **En el repo:** Chave (2014) con diámetro estimado `D = 2,5·h^0,63`.
-- Ambas son ecuaciones pensadas **por árbol** y aplicadas a la altura del dosel de un píxel; ninguna se validó contra carbono medido.
+- La del repo (Chave 2014) es una ecuación **por árbol**; el origen de la usada en los datos no está documentado (§3.10). Ninguna se validó contra carbono medido.
 
 ### 3.3 Error de área y de dominio en el stock — *Verificado*
 - `Resumen_Altura_Pereyra.csv` y `Carbono_Zonas.csv` cuentan cada píxel como 1 m² (753,8 ha en total). Los píxeles son de ~20,4 m² (5 m) y ~81,5 m² (10 m).
@@ -161,6 +162,85 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 - **Stock de Pereyra por distintos caminos** (10.053 ha; solo orden de magnitud y todos con ecuaciones no validadas): método original bien calculado 63 ktC; L4A × área ≈ 116 ktC [IC95 ≈ 66–174]; ecuación del trabajo sobre RH95 ≈ 159–191 ktC; Meta calibrado contra GEDI ≈ 146–177 ktC.
 - **Salvedades de L4A en Pereyra:** 353 de las 3.280 huellas (11 %) no tienen dato L4A y quedan fuera. Verificado: son huellas de vegetación baja (RH95 medio 2,3 m, 87 % con Meta = 0, 1 % con RH95 ≥ 5 m), así que la media L4A de 11,5 tC/ha está algo sobreestimada: si esas huellas valieran 0, o lo que predice su RH95, la media sería ≈ 10,3–10,4 tC/ha (−10 %, dentro del IC95 [6,6 ; 17,3]) y el cociente Iguazú ÷ Pereyra subiría de 3,6 a ≈ 4,0. Además, r(RH95, AGBD) = 0,87 en Pereyra pero 0,61 en Iguazú: en selva densa L4A depende de más que la altura.
 
+### 3.10 La ecuación de carbono frente a GEDI L4A — *Verificado, con reservas*
+**Origen.** El notebook original la rotula «t/ha aproximado» y no cita fuente. Comparte el coeficiente 0,0673 con la ecuación pantropical de Chave et al. (2014), pero tiene otra forma (exponente 1,23, sin diámetro, factor ×100). **Su origen y su validez no están documentados.**
+
+**Comparación en las mismas huellas.** Cociente entre la biomasa que da la ecuación sobre RH95 y la biomasa de GEDI L4A (modelo calibrado a escala global con parcelas de campo), por clase de altura:
+
+| RH95 de GEDI | < 3 m | 3–6 | 6–10 | 10–15 | 15–20 | 20–25 | 25–30 | ≥ 30 m |
+|---|---|---|---|---|---|---|---|---|
+| Pereyra (2.927 huellas) | 6,3 | 2,9 | 2,6 | 2,3 | 1,6 | 1,4 | 1,3 | 1,1 |
+| Iguazú (20.000 huellas) | — | 2,5 | 2,5 | 2,0 | 1,6 | 1,3 | 1,1 | 1,0 |
+
+- **La ecuación sobreestima 2 a 3 veces frente a L4A en alturas menores de 15 m** (la mayor parte de Pereyra) y converge con L4A en dosel alto. El patrón es el mismo en los dos sitios.
+- Ajustando una potencia a L4A, el exponente implícito es de ≈ 2,4 (Pereyra) a 2,8 (Iguazú), contra 1,23 de la ecuación del trabajo.
+- Las medias sobre todas las huellas: Pereyra, ecuación 44,0 vs. L4A 24,5 Mg/ha; Iguazú, 128,0 vs. 87,7 Mg/ha.
+
+**Consecuencia: dos errores que se compensan en parte.** La altura de Meta es ~4 m menor que la de GEDI (§3.6, resta carbono) y la ecuación sobreestima a alturas bajas (suma carbono). Por eso el stock del método original (63 ktC) cae en medio de los demás. Stock de la reserva completa según el camino:
+
+| Camino | Stock (ktC) |
+|---|---|
+| Método original, bien calculado (altura de Meta + ecuación) | 63,3 |
+| Altura de Meta calibrada **directamente contra L4A** (regresión isotónica) | **94,8** [84,2 – 102,1] (núcleo + amortiguamiento 18,2; transición 76,5) |
+| Media L4A × área (ponderada por zona: 131) | 116 |
+| Altura de Meta con la ecuación, sin calibrar (p95 a 25 m) | 95,6 |
+| Ecuación calibrada contra RH95 de GEDI | 146 – 177 |
+
+**Lectura.** Ningún valor está validado en campo. Dado que la ecuación infla las alturas bajas respecto de L4A, **los 146–177 ktC (que usan la ecuación) probablemente sobreestiman**, y el rango más consistente con un producto calibrado con parcelas es **≈ 95–130 ktC**. L4A es a su vez un modelo global con error propio, sobre todo en vegetación baja y herbácea; no es verdad de campo.
+
+**Qué hacer.** Si se quiere un valor central, usar la calibración de la altura contra L4A (o contra parcelas, si llegan) y no la ecuación; si se conserva la ecuación, presentarla como una hipótesis no validada.
+
+**Qué dicen los documentos del proyecto sobre la ecuación** (extracción con NotebookLM de los PDF del trabajo; las citas **no se verificaron contra los PDF**):
+
+1. **Las versiones del paper se contradicen.** El PDF enviado al CAI describe en la §2.3 la ecuación completa de Chave et al. (2014), `AGB = 0,0673·(ρ·D²·H)^0,976`, con D estimado por un modelo H:D a partir de RH95, y **no incluye ningún apéndice con otra ecuación**. En cambio, según NotebookLM, `Carbono_Pereyra_JAIIO2026_v2.pdf` (versión con apéndices) trae en su Apéndice A2 la ecuación simplificada `AGB = 0,0673·(ρ·H)^1,23·100; C = 0,47·AGB`, «exportado como Carbono_Pereyra.tif». **La segunda es la que generó los datos.**
+2. **El exponente 1,23 se presenta como un resultado y es circular.** Los textos informan una regresión log-log altura–carbono con pendiente 1,23 y R² = 0,98 (`Pereyra.pdf`, §3.3), R² = 0,93 «exploratoria» (apéndice) y R² = 1,000 (notebook). Esa pendiente es el exponente de la propia ecuación, así que no puede respaldarla. No hay una derivación documentada del 1,23. El «Informe Crítico de Validación» ya lo marcó («relación tautológica (circular)»).
+3. **La densidad de madera no era específica del sitio.** El texto dice que se asigna «por tipo de hábitat según el mapa UNESCO» (§2.3) y «por clase de cobertura» (§4.4); el código usa **ρ = 0,6 constante**, que coincide con el supuesto del ejemplo de las guías de Winrock («Wood Density is assumed to be 0.6 g/cm3 for all trees»).
+4. **La fracción de carbono cambia entre versiones:** 0,47 en la v2 (Winrock, que cita IPCC 2006, Tabla 4.3) y 50 % en `Pereyra.pdf`.
+5. **Ni Chave (2014) ni Winrock proponen estimar la biomasa de árboles vivos solo con la altura del dosel.** La Ec. (4) de Chave usa D, H y ρ por árbol (en kg); su Ec. (7) prescinde de la altura. Las guías de Winrock usan el diámetro.
+6. **Los informes de validación** recomiendan incorporar la densidad de la madera por tipo funcional de vegetación y señalan la simplificación; evaluaron un texto que describía GEDI como fuente de la altura.
+
+**Conclusión.** La ecuación es una **simplificación propia de Chave (2014)**, sin derivación ni calibración documentadas, con un exponente que no tiene respaldo. La §2.3 y la §4.3 del paper publicado deben corregirse para que describan lo que se hizo (Apéndice A2, ρ constante).
+
+### 3.11 El paper enviado al CAI frente a los archivos — *Verificado contra el PDF enviado (13 páginas, creado el 26/6/2026) y contra tus archivos*
+**Tres versiones distintas.** `Pereyra.pdf` (borrador anterior), `Carbono_Pereyra_JAIIO2026_v2.pdf` (versión con apéndices; según NotebookLM, su Apéndice A2 describe el flujo real: Meta/WRI, ecuación simplificada, Sentinel-2 de 2024 y NBR) y **el PDF que se envió al CAI**, que no tiene esos apéndices: su único apéndice trata del uso de IA. Por eso el texto enviado **no contiene ninguna pista del flujo real**.
+
+| Aspecto | PDF enviado al CAI | Archivos del proyecto |
+|---|---|---|
+| Fuente de la altura | GEDI L2A RH95 + modelo H:D (§2.2.1, §2.3, título y resumen) | **Meta/WRI de 1 m** (`Altura_Dosel_Pereyra.tif`). Meta no se menciona como insumo |
+| Ecuación y ρ | Chave (2014) completa con D estimado; ρ «por tipo de hábitat» (§2.3, §4.4) | Simplificada, `0,0673·(ρ·h)^1,23·100`, con **ρ = 0,6 constante** (§3.10) |
+| Sentinel-2 | Año 2023; nubes < 10 % con QA60 (§2.2.2) | **2024**; nubosidad de escena < 20 %, sin máscara por píxel |
+| Variables | B2, B3, B4, B8, B11, **B12**, NDVI, NDWI (Tabla 2, §2.4.2) | Sin B12; con **NBR** |
+| Definición del NDWI | (B3 − B8)/(B3 + B8) (Tabla 2) | **(B3 − B11)/(B3 + B11)**: correlación 1,0000 con la banda guardada en el stack |
+| Resolución del carbono | 10 m (§2.3) | ~5 m; la de 10 m es un remuestreo bilineal |
+| Muestras (873.668) | «en cada píxel con muestra GEDI válida» y «cobertura completa tras filtrado GEDI» (§2.4.1, Tabla 3) | Píxeles de 10 m con carbono > 0; **no hay filtrado GEDI** |
+| Partición 70/30 | «aleatoria por clase de altura» | Aleatoria simple, sin estratificar |
+| Árboles del Random Forest | **200**, «convergencia del error OOB verificada desde 150» (Tabla 3) | **300** en el notebook; no se calculó el error OOB |
+| Stock | 4,6 kt (resumen, abstract, §3.4, §5) | Ver abajo |
+| Sesgo medio | +1,5 tC/ha (§3.4) | **−0,04** en `Carbono_Residuos_RF.tif` (media de observado − predicho; mediana −1,09) |
+| Importancia de variables | Tabla 5 y texto (NDVI 3,2 %; «B12» 4,3 %) | Etiquetas de NDVI, NDWI y NBR desplazadas (§3.8) |
+
+**El 4,6 kt contradice las propias cifras del paper.** El mismo párrafo (§3.4) informa una densidad media de **10,89 tC/ha** «sobre el área analizada»; con el área declarada de la reserva (~10.248 ha) eso da ≈ **112 ktC**, y aun con las ~7.120 ha que tienen carbono en el mapa daría ≈ 77 ktC. El 4,6 kt solo corresponde a ~420 ha.
+
+**Lo que coincide con el notebook.** R² 0,712, RMSE 7,62, MAE 5,14, las 873.668 muestras, la Tabla 6 de error por clase de altura y la densidad media de 10,89 tC/ha (máximo 115,10).
+
+**Lo que el paper ya reconoce.** La §4.4 indica que la autocorrelación espacial infla las métricas, que el R² = 0,71 es un límite superior y que la validación espacial es la mejora prioritaria (el resultado de §3.5 lo confirma). También reconoce que no hay inventarios en el sitio (§4.3).
+
+**La tabla por zonas no está en el paper enviado.** El texto no contiene ningún resultado por zona (solo menciona «la zonificación histórica del parque»). El archivo `Carbono_Zonas.csv` corresponde a otros materiales.
+
+**Tabla de stock por clase de altura de `Pereyra.pdf` (borrador).** Informa superficies de 3.000 / 2.500 / 2.000 / 1.500 / 1.000 / 248 ha (suman 10.248) y 15 / 125 / 460 / 900 / 1.350 / 1.750 t C (suman 4.600). No coincide con las salidas del notebook (541,43 / 89,01 / 70,01 / 42,27 / 8,11 / 2,96 ha; 4.665 t) y las superficies son números redondos. No se conoce su origen; no debe citarse.
+
+**Uso de IA.** El apéndice del PDF enviado declara el uso de modelos de lenguaje «para mejorar el lenguaje y la legibilidad» y para «la documentación y revisión de los scripts de procesamiento», y afirma que el diseño y el flujo fueron del autor. Es una **hipótesis** (no una conclusión) que esa documentación de los scripts explique por qué el notebook del repositorio anterior describía otro flujo.
+
+**Informes de validación.** Ni el «Informe Crítico de Validación» ni «Validación GEDI» identifican autor, herramienta ni fecha; ambos dan «Ajustable» y recomiendan aclarar la fuente del mapa de 1 m, detallar los filtros GEDI, cuantificar la incertidumbre y validar con parcelas.
+
+### 3.12 Referencias y citas — *Verificado contra el PDF enviado y contra Crossref/DataCite*
+- **Li et al. (2022)** se cita en la §3.1 como respaldo del desempeño del modelo. **La referencia no se sostiene:** su DOI (10.3390/rs14081913) corresponde a otro artículo («New Chung-Li Ionosonde in Taiwan: System Description and Preliminary Results») y no se encontró ningún artículo con el título indicado.
+- **Tolan et al. (2024):** el DOI consignado (10.1016/j.rse.**2024**.113888) **no existe**; el correcto es 10.1016/j.rse.**2023**.113888. Además se lo cita (§3.2, §4.2) para respaldar que SWIR1 supere al NDVI, pero ese trabajo estima altura de dosel **desde imágenes RGB** y no analiza bandas SWIR.
+- **UNESCO (2008):** el proyecto es de **abril de 2007** (firmado el 25/4/2007) y su autor institucional es el Ministerio de Asuntos Agrarios de la Provincia de Buenos Aires.
+- **Verificadas como existentes:** Lei et al. (2024), páginas 297–303, tal como figura; Potapov et al. (2021); Saatchi y Favrichon (publicada en 2023/2024 según el registro); Sione et al. (2021). No verifiqué las demás.
+- **§4.3 «Validación biológica»:** compara los valores > 40 tC/ha con el Espinal de Entre Ríos (Sione et al., 2021: 43,99 ± 10,43 tC/ha) y los talares; es una comparación con otras ecorregiones de valores que provienen de la propia ecuación, no una validación.
+- **Correcto:** el factor 0,47 sí cita a Winrock (2018) en la §2.3, y las Figuras 1 y 2 (dispersión y mapa) están en el texto.
+
 ---
 
 ## 4. Qué cambiar
@@ -176,6 +256,9 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 | 6 | Agregar el chequeo Meta vs. GEDI y el sesgo de altura a Limitaciones |
 | 7 | Corregir el hallazgo de importancia de variables según §3.8: NDVI = 4,3 % (no 3,2 %); B11 = 59,1 % se mantiene |
 | 8 | Si el trabajo se presenta junto con Iguazú, comparar **con el mismo método** (§3.9) y no los R² ni los mapas del RF |
+| 9 | Corregir la §2.3 y la §4.4 (ecuación de Chave completa con D estimado; ρ por hábitat) para que describan lo que se hizo: ecuación simplificada con ρ = 0,6 constante; no presentar la pendiente log-log 1,23 ni su R² como respaldo (§3.10) |
+| 10 | Reescribir §2.2, §2.3, §2.4, las Tablas 2 y 3 y los números del resumen según los archivos (fuente de la altura, año y variables de Sentinel-2, definición del NDWI, resolución, origen de las muestras, partición, 300 árboles, sin verificación OOB); aclarar o retirar el 4,6 kt, que contradice la densidad media de 10,89 tC/ha (§3.11) |
+| 11 | Revisar las citas: Li et al. (2022) no es verificable (el DOI es de otro artículo); corregir el DOI de Tolan et al. (rse.2023.113888) y no usarlo para respaldar la importancia del SWIR1; «UNESCO (2008)» → Ministerio de Asuntos Agrarios de la Provincia de Buenos Aires (2007); corregir el sesgo medio (+1,5 vs −0,04 tC/ha) (§3.12) |
 
 ### Repositorio
 - Subir el código real que genera `Altura_Dosel_Pereyra*.tif` y `Carbono_Pereyra.tif`, con la fórmula usada.
