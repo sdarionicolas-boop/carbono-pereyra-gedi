@@ -51,7 +51,7 @@ Los intervalos reflejan solo la calibración. **No** incluyen el error de la ecu
 - La ecuación de carbono, `C = 0,0673·(0,6·h)^1,23·100·0,47`, es por árbol y se aplica a la altura del dosel de un píxel. **No está validada con parcelas.**
 - El R² del Random Forest mide cuánto Sentinel-2 reproduce un carbono derivado de la altura de Meta. No valida carbono.
 - La altura de Meta subestima frente a GEDI: sesgo medio ≈ −2,8 m (r = 0,88; 3.280 huellas), aproximadamente constante (~3–4 m) donde ambos productos detectan vegetación. GEDI tampoco es verdad de campo.
-- Las zonas Núcleo / Amortiguamiento / Transición del trabajo anterior eran franjas norte–sur de una caja y **se eliminaron**.
+- Las zonas Núcleo / Amortiguamiento / Transición del trabajo anterior eran franjas norte–sur de una caja, con las superficies oficiales asignadas a los nombres equivocados, y **se eliminaron**. La zonificación oficial (proyecto MAB-UNESCO, 2007) es: núcleo 4.998,05 ha, amortiguamiento 791,14 ha y transición 4.458,81 ha (total 10.248 ha). Calcular carbono por zona requiere la cartografía vectorial del ente gestor (ver `docs/CORRECCIONES_PEREYRA.md`, §3.4).
 
 ## Datos y licencias
 - Código: MIT (ver `LICENSE`).
