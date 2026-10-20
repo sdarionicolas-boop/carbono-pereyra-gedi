@@ -10,9 +10,9 @@
 
 1. **La cadena de cálculo real no coincide con la descrita.** Los resultados salen de la altura de dosel de **Meta/WRI** (1 m), convertida a carbono con una ecuación propia, y de un Random Forest con Sentinel-2. **GEDI no interviene** en ninguna celda que genere los resultados, y la fórmula del repo no es la usada.
 2. **El stock publicado (4,6 kt) es incorrecto.** Se calculó con área de píxel errónea (1 m² en lugar de ~20 m²) y sobre una caja que cubre solo el 59 % de la reserva. Con el mismo método bien calculado: **63 ktC**.
-3. **Las "zonas" Núcleo / Amortiguamiento / Transición no son zonas de la reserva:** son tres franjas norte–sur de la caja.
+3. **Las "zonas" Núcleo / Amortiguamiento / Transición no son zonas de la reserva:** son tres franjas norte–sur de la caja, y las superficies oficiales (4.998 / 791 / 4.459 ha) quedaron asignadas a los nombres equivocados (§3.4).
 4. **Los R² (0,71; 0,93; 1,00) no validan carbono:** miden qué tan bien se reproduce una transformación de la altura de Meta.
-5. **La altura de Meta subestima frente a GEDI** (sesgo ≈ −2,8 m dentro de la reserva, creciente con la altura). Calibrada contra GEDI, el stock sube a **~146–177 ktC** (2,3 a 2,8 veces).
+5. **La altura de Meta subestima frente a GEDI** (desfase medio ≈ −2,8 m dentro de la reserva y ≈ −3,9 m donde ambos productos detectan vegetación). Calibrada contra GEDI, el stock sube a **~146–177 ktC** (2,3 a 2,8 veces).
 6. **Pereyra e Iguazú solo son comparables con un método común** (huellas GEDI → ecuación). Así, Iguazú tiene **~3 a 4 veces más carbono por hectárea** que Pereyra (3,6 con GEDI L4A en ambos sitios); el nivel absoluto de cada sitio depende de la ecuación o producto usado (§3.9).
 
 ---
@@ -59,8 +59,26 @@ Los intervalos reflejan solo la calibración (bootstrap por bloques de 2 km). **
 - La caja (lon −58,233 a −58,043; lat −34,89 a −34,81) cubre solo el 59 % del polígono de la reserva (OSM, 10.053 ha). Faltan ~4.100 ha al norte y al este, con mucho menos carbono (GEDI: 7,5 vs 27,8 tC/ha). Además, ~9.500 ha de la caja no pertenecen a la reserva.
 - Polígono: OpenStreetMap, relación 10968584 (ODbL). Coincide con el de WDPA (92 % de solapamiento, contorno a ≤ 825 m) y con el área oficial (10.248 ha) dentro de ~2 %. No sé si ambos derivan de la misma fuente.
 
-### 3.4 Las zonas UNESCO son franjas de la caja — *Verificado en el código*
-El notebook lo dice: "modelo geométrico aproximado… las zonas se generan por subconjuntos dentro del mismo polígono (en el eje Norte-Sur)", con cortes en 7,7 % y 51,2 % del alto, proporciones tomadas de un "documento UNESCO" (791, 4.459 y 4.998 ha; **no verifiqué ese documento**). Recomendación: **eliminar la tabla** o rehacerla con la zonificación oficial (hay que pedirla al ente gestor).
+### 3.4 Las zonas UNESCO eran franjas de la caja, con superficies asignadas al nombre equivocado — *Verificado*
+**Qué hizo el notebook.** Dividió la caja en tres franjas norte–sur (cortes en 7,7 % y 51,2 % del alto) con las proporciones de un «documento UNESCO» (791, 4.459 y 4.998 ha) y les puso los nombres Núcleo, Amortiguamiento y Transición, en ese orden.
+
+**Qué dice el documento oficial** (proyecto de Reserva de Biosfera, formulario MAB-UNESCO, abril de 2007, enviado por el Parque; apartado 7):
+
+| Zona | Superficie oficial | En el notebook se la llamó |
+|---|---|---|
+| A · Núcleo (Reserva Natural Punta Lara) | **4.998,05 ha** (48,8 %) | «Transición» |
+| B · Amortiguamiento (tampón) | **791,14 ha** (7,7 %) | «Núcleo» |
+| C · Transición | **4.458,81 ha** (43,5 %) | «Amortiguamiento» |
+| Total | 10.248,00 ha | — |
+
+Las tres superficies son las del documento, pero **quedaron asignadas a los nombres equivocados** (el orden estaba invertido). Además, la geometría real no son franjas: según el mapa «Zonificación y área de influencia» (Ministerio de Ambiente de la Provincia, agosto de 2022), el **núcleo es el bloque grande del norte-noreste, sobre la costa del Río de la Plata** (entre la autopista La Plata–Buenos Aires y el río); el amortiguamiento es una franja menor al este; y la **transición** ocupa el sur y se subdivide en C1 (uso productivo), C2 (uso público) y C3 (uso mixto).
+
+**Consecuencias.**
+- La tabla por zonas del trabajo publicado **no es utilizable** (ni los nombres, ni la geometría, ni las áreas por el error de unidades de §3.3).
+- Los extremos geográficos oficiales (N 34°45′54″ S; S 34°53′15″ S; E 57°59′46″ O; O 58°11′19″ O) **coinciden con el polígono de OpenStreetMap** usado en este trabajo, lo que respalda ese límite. El área del polígono (10.053 ha) difiere un 2 % del área oficial (10.248 ha).
+- La **caja de los rasters originales cubre sobre todo la zona de transición** (la parte sur, el Parque Provincial propiamente dicho) y deja afuera casi todo el núcleo, que está al norte-noreste. Esto explica por qué solo el 59 % del polígono estaba dentro de la caja y por qué esa parte tenía más carbono (GEDI: 27,8 vs. 7,5 tC/ha fuera de la caja).
+
+**Qué falta.** El Parque envió los mapas como imágenes: para calcular carbono por zona hace falta la zonificación en formato vectorial (shapefile o GeoJSON).
 
 ### 3.5 Interpretación de los R² — *Verificado*
 - `R² = 1,000` (log–log altura–carbono): identidad, el carbono es función exacta de la altura.
@@ -71,9 +89,11 @@ El notebook lo dice: "modelo geométrico aproximado… las zonas se generan por 
 ### 3.6 Altura de Meta vs. GEDI — *Verificado*
 Dentro de la reserva (3.280 huellas GEDI, filtros: calidad, sensibilidad ≥ 0,95, noche, pendiente ≤ 20°, 2019–2023):
 - r = 0,88; sesgo de Meta = −2,8 m; RMSE 4,4 m.
-- El sesgo crece con la altura: −1,7 m (RH95 < 5 m), −1,9 m (5–10), −4,4 m (10–15), −5,7 m (15–20), −9,2 m (≥ 20).
+- **Cómo varía con la altura:** al clasificar las huellas por la altura de GEDI, el desfase parece crecer (−1,7 m con RH95 < 5 m hasta −9,2 m con ≥ 20 m), pero eso es en buena parte un **artefacto estadístico** (regresión a la media: se clasifica por la variable más ruidosa). Al clasificar por la altura de Meta, el desfase GEDI − Meta es casi constante (+2,9; +3,3; +4,1 y +3,3 m en las clases 0,5–5; 5–10; 10–15 y ≥ 15 m). Lo defendible es un **desfase de ~3–4 m, aproximadamente constante**; la pendiente Meta ~ GEDI es 0,55 (MCO) o 0,68 (regresión de Deming, λ = 1).
 - El 60 % de las huellas tiene Meta = 0; en ese grupo GEDI marca una mediana de ~2,2 m (probable piso de ruido).
 - Carbono medio por huella: GEDI 19,0 vs. Meta 10,8 tC/ha (cociente 0,57).
+
+- **Chequeo de superficie arbolada (independiente de GEDI).** Dentro del polígono, el mapa de Meta da **2.924 ha con altura ≥ 5 m y 3.432 ha con altura ≥ 3 m**, frente a las «aproximadamente 3.200 hectáreas» de masa vegetal arbolada que cita el proyecto de Reserva de Biosfera (2007). No valida el carbono, pero indica que el mapa de cobertura arbórea es razonable; lo que subestima es la altura.
 
 ### 3.7 Calibración contra GEDI: límites — *Verificado, con reservas*
 - Se ajusta una regresión isotónica del carbono-GEDI sobre la altura de Meta; con validación cruzada espacial el R² por huella sube de 0,62 a 0,73.
@@ -146,12 +166,12 @@ Los resultados de ambos sitios **no se pueden comparar tal como salieron**: en P
 ### Texto sugerido (Métodos y Limitaciones)
 > *Métodos.* La altura del dosel se obtuvo del mapa global de altura de dosel de 1 m (Meta/WRI; Tolan et al., 2024), promediada a ~5 m. El carbono aéreo se estimó mediante la ecuación alométrica C = 0,0673·(ρh)^1,23 × 100 × 0,47 (ρ = 0,6), sin calibración local. Se entrenó un Random Forest para predecir ese carbono a partir de un mosaico anual Sentinel-2. El stock se calculó con el área real del píxel dentro del polígono de la reserva (10.053 ha).
 >
-> *Limitaciones.* El R² del modelo mide la capacidad de Sentinel-2 para reproducir un producto derivado de altura de dosel y no constituye validación frente a carbono medido en campo. La altura de Meta resultó, frente a 3.280 huellas GEDI (filtradas por calidad, noche y pendiente), en promedio 2,8 m menor (r = 0,88), con sesgo creciente en los dosel altos. Corregir ese sesgo eleva la estimación de stock en un factor de ~2,3 a 2,8. La ecuación alométrica, desarrollada para árboles individuales, no se validó contra parcelas.
+> *Limitaciones.* El R² del modelo mide la capacidad de Sentinel-2 para reproducir un producto derivado de altura de dosel y no constituye validación frente a carbono medido en campo. La altura de Meta resultó, frente a 3.280 huellas GEDI (filtradas por calidad, noche y pendiente), en promedio 2,8 m menor (r = 0,88; ≈ 3,9 m donde ambos detectan vegetación). Corregir ese sesgo eleva la estimación de stock en un factor de ~2,3 a 2,8. La ecuación alométrica, desarrollada para árboles individuales, no se validó contra parcelas.
 
 ---
 
 ## 5. Pendiente / sin verificar
-- Pedir la zonificación oficial de la reserva (ente gestor) para rehacer las zonas.
+- Obtener la zonificación oficial **en formato vectorial** (el Parque envió documentos y mapas en imagen, ver §3.4) para calcular carbono por zona.
 - Si hay parcelas de campo en Pereyra, validar la ecuación de carbono: es el factor que más pesa y el menos conocido.
 - Validar con parcelas de campo en Iguazú (los pedidos están redactados en `PEDIDOS_DATOS.md`): es lo único que permite decidir entre 41,5, 59,7 y 73,5 tC/ha.
 
