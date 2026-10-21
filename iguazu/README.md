@@ -21,7 +21,7 @@ Mismo enfoque que la versión Pereyra, aplicado a la Selva Paranaense, **con las
 
 ### Lo que no se afirma
 - Un stock total firme: falta el dato de campo que decida el valor absoluto.
-- Que GEDI «subestime» o «sobreestime»: la media de GEDI (≈ 41 tC/ha) queda por debajo de los rangos publicados para la Selva Paranaense (60–100+ tC/ha), pero esa brecha **no está explicada** (puede ser GEDI, los rangos, o la diferencia de ámbito).
+- Que GEDI «subestime» o «sobreestime». La media de GEDI (≈ 41 tC/ha) es menor que las referencias disponibles (59,7 tC/ha, media regional del INBN2; ≈ 68 tC/ha, dos parcelas de tesis dentro del Parque; ≈ 99 tC/ha, siete parcelas del NO de Misiones; 125 tC/ha, bosque maduro del Bosque Atlántico), pero **la comparación no es pareja**: las dos parcelas del Parque se ubicaron a propósito en bosque de dosel cerrado y contaron árboles desde 5 cm de DAP (según sus autoras), mientras que la media de GEDI abarca todo el Parque, con zonas de estructura abierta. En un estudio de la región, el bosque de dosel abierto tuvo alrededor de un 50 % menos de carbono en biomasa que el cerrado (Zaninovich y Gatti, 2020). Por eso no hablo de «brecha»: solo la validación en campo puede decidirlo.
 - Que el Random Forest sirva para mapear: con un objetivo independiente (GEDI) Sentinel-2 casi no explica la variación.
 
 ## Contenido
