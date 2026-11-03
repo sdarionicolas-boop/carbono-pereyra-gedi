@@ -1,0 +1,3 @@
+sitio,escenas,escenas_que_cubren_todo_el_sitio,primera,ultima,caminos_distintos,direcciones,polarizaciones,colecciones,tamano_medio_GB
+Iguazú,30,30,2026-06-19,2026-10-22,3,ASCENDING/DESCENDING,"HH, HH+HV",NISAR_L2_GCOV_PROVISIONAL_V1,5.4
+Pereyra Iraola,39,30,2026-06-19,2026-10-23,3,ASCENDING/DESCENDING,HH+HV,NISAR_L2_GCOV_PROVISIONAL_V1,2.9
