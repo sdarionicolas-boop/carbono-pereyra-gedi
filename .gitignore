@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 *.tif
+env.txt
+nisar/datos/
+nisar/celdas_nisar_hv.csv
+nisar/pares_cci_gedi.csv
